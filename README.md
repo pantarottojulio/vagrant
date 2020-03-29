@@ -1,0 +1,2 @@
+# vagrant
+Repositório para Vagrantfiles
