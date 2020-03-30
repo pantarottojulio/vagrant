@@ -31,8 +31,8 @@ Vagrant.configure("2") do |config|
     ansible.vm.network "private_network", ip: "192.168.200.31"
 
     ansible.vm.provider "virtualbox" do |y|
-        v.customize [ "modifyvm", :id, "--cpus", "1" ]
-        v.customize [ "modifyvm", :id, "--memory", "512" ]
+        y.customize [ "modifyvm", :id, "--cpus", "1" ]
+        y.customize [ "modifyvm", :id, "--memory", "512" ]
     end
 
   end
@@ -50,8 +50,8 @@ Vagrant.configure("2") do |config|
    debiandb.vm.network "private_network", ip: "192.168.200.32"
 
     debiandb.vm.provider "virtualbox" do |z|
-        y.customize [ "modifyvm", :id, "--cpus", "1" ]
-        y.customize [ "modifyvm", :id, "--memory", "512" ]
+        z.customize [ "modifyvm", :id, "--cpus", "1" ]
+        z.customize [ "modifyvm", :id, "--memory", "512" ]
     end
 
   end
