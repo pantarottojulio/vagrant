@@ -1,0 +1,94 @@
+  
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+
+$script = <<-SCRIPT
+    sudo yum update && yum upgrade -y
+	sudo yum install vim -y
+	sudo yum install nano -y
+    sudo yum install ansible -y
+	sudo yum install epel-release -y
+	sudo yum install python2-pip -y
+	sudo pip install ansible --upgrade
+	cd /etc/ansible
+	mv ansible.cfg  ansible.cfg_original
+	sudo yum install git -y
+	git clone https://github.com/msnhd2/ansible.git
+	cd /etc/ansible/ansible
+	mv ansible.cfg /etc/ansible
+	rm -rf /etc/ansible/ansible
+	export TERM=linux
+SCRIPT
+
+
+# Vagrant Settings
+
+Vagrant.configure("2") do |config|
+
+  # Grafana
+  config.vm.define "grafana" do |grafana|
+
+    grafana.vm.hostname = "grafanasrv"
+
+    grafana.vm.box = "codeyourinfra/monitor"
+
+    grafana.vm.box_check_update = false
+
+    grafana.vm.network "forwarded_port", guest: 3000, host: 3000
+
+    grafana.vm.network "private_network", ip: "192.168.200.30"
+
+    grafana.vm.provider "virtualbox" do |v|
+        v.customize [ "modifyvm", :id, "--cpus", "1" ]
+        v.customize [ "modifyvm", :id, "--memory", "512" ]
+    end
+
+  end
+  # End Grafana
+
+  # Ansible
+  config.vm.define "ansible" do |ansible|
+
+    ansible.vm.hostname = "ansiblesrv"
+
+    ansible.vm.box = "centos/7"
+
+    ansible.vm.box_check_update = false
+
+    ansible.disksize.size = "12GB"
+
+    ansible.vm.provision "shell", inline: $script
+
+    ansible.vm.network "forwarded_port", guest: 80, host: 8080
+
+    ansible.vm.network "private_network", ip: "192.168.200.31"
+
+    ansible.vm.provider "virtualbox" do |y|
+        y.customize [ "modifyvm", :id, "--cpus", "1" ]
+        y.customize [ "modifyvm", :id, "--memory", "512" ]
+    end
+
+  end
+  # End Ansible
+
+  # DebianSrv
+  config.vm.define "debiandb" do |debiandb|
+
+    debiandb.vm.hostname = "debiansrv"
+
+    debiandb.vm.box = "debian/stretch64"
+
+    debiandb.vm.network "forwarded_port", guest: 3306, host: 9091
+
+   debiandb.vm.network "private_network", ip: "192.168.200.32"
+
+    debiandb.vm.provider "virtualbox" do |z|
+        z.customize [ "modifyvm", :id, "--cpus", "1" ]
+        z.customize [ "modifyvm", :id, "--memory", "512" ]
+    end
+
+  end
+  # End debiandb
+
+end
